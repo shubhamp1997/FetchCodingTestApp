@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Fetch Coding Test App</string>
+    <string name="headline">Fetch Coding Exercise</string>
+    <string name="fetch_data">Fetch Data</string>
 </resources>
