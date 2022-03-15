@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     //Using Binding instead of findView
     ActivityMainBinding binding;
     LinkedList<Item> itemList;
+    LinkedList<Item> itList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Initialize the itemList, ItemAdapter [Custom ArrayAdapter],
         initializeItemList();
-        binding.fetchButton.setOnClickListener(view -> new fetchData().start());
+        binding.fetchButton.setOnClickListener(view -> new FetchData().start());
         System.out.println("on create complete");
     }
 
@@ -62,8 +63,10 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<Item> groupedItems = new ArrayList<>();
 
+        itList = itemList;
+
         //Loops through the entire itemList and adds selected ones into groupedItems List
-        for(Item i: itemList){
+        for(Item i: itList){
            if(i.listId == listID){
                groupedItems.add(i);
            }
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
     //This is the class which initializes the URL Connection, Shows the progressDialog,
     //Gets the JSON data and parses it into JSON objects and then finally feeds that into the list(itemList)
-    class fetchData extends Thread{
+    class FetchData extends Thread{
 
         //This is the string in which all the json data will be fed iteratively/line by line
         String data = "";
@@ -182,7 +185,9 @@ public class MainActivity extends AppCompatActivity {
             mainHandler.post(() -> {
                 if(progressDialog.isShowing()){
                     progressDialog.dismiss();
-                    itemAdapter.notifyDataSetChanged();
+                    //Construct adapter with the list and set the listView to the adapter
+                    ItemAdapter adapter = new ItemAdapter(getApplicationContext(),0,itemList);
+                    binding.itemsList.setAdapter(adapter);
                 }
             });
         }
