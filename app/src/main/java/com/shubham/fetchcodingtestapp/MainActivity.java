@@ -29,53 +29,55 @@ import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
 
-    ActivityMainBinding binding;
-    LinkedList<Item> itemList;
-
     int selectedList = 1;
-
-    ListView itemsList;
-    Button all,l1,l2,l3,l4,oBtn;
-
 
     ItemAdapter itemAdapter;
     Handler mainHandler = new Handler();
     ProgressDialog progressDialog;
+
+    //Using Binding instead of findView
+    ActivityMainBinding binding;
+    LinkedList<Item> itemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        //Initialize the itemList, ItemAdapter [Custom ArrayAdapter],
         initializeItemList();
         binding.fetchButton.setOnClickListener(view -> new fetchData().start());
         System.out.println("on create complete");
-
     }
 
     private void initializeItemList(){
         itemList = new LinkedList<>();
         itemAdapter = new ItemAdapter(getApplicationContext(),0,itemList);
         binding.itemsList.setAdapter(itemAdapter);
-        System.out.println("items List 1 Initialized");
     }
 
+    //To group/filter the items into different lists based on their ListID: Whichever is provided
     private void filterList(int listID){
 
-        selectedList = listID;
         ArrayList<Item> groupedItems = new ArrayList<>();
 
+        //Loops through the entire itemList and adds selected ones into groupedItems List
         for(Item i: itemList){
            if(i.listId == listID){
                groupedItems.add(i);
            }
         }
+
         System.out.println(groupedItems.size()+"Grouped length");
+
+        //Construct adapter with the list and set the listView to the adapter
         ItemAdapter adapter = new ItemAdapter(getApplicationContext(),0,groupedItems);
         binding.itemsList.setAdapter(adapter);
 
     }
 
+    //OnClick/OnTap for all the lists
     public void list1Tapped(View view) {
         filterList(1);
     }
@@ -92,14 +94,17 @@ public class MainActivity extends AppCompatActivity {
         filterList(4);
     }
 
-
+    //This is the class which initializes the URL Connection, Shows the progressDialog,
+    //Gets the JSON data and parses it into JSON objects and then finally feeds that into the list(itemList)
     class fetchData extends Thread{
 
+        //This is the string in which all the json data will be fed iteratively/line by line
         String data = "";
 
         @Override
         public void run(){
 
+            //show progressDialog
             mainHandler.post(() -> {
                 progressDialog = new ProgressDialog(MainActivity.this);
                 progressDialog.setMessage("Retrieving Data");
@@ -109,60 +114,63 @@ public class MainActivity extends AppCompatActivity {
             });
 
             try {
+                //URL Connection Initialized
                 URL url = new URL("https://fetch-hiring.s3.amazonaws.com/hiring.json");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                //Getting input stream from URL Connection
                 InputStream inputStream = connection.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
+                //String to be appended to the data string
                 String line;
 
                 System.out.println("try block running");
+
                 int lineP=0;
+
+                //Read the data until the last line
                 while ((line=reader.readLine())!=null){
                     data = data + line;
                     System.out.println("Line "+lineP);
                     lineP = lineP+1;
-
                 }
 
+                //read the data
                 if(!data.isEmpty()){
 
+                    //Parse JSON Array/objects from the data
                     JSONArray items = new JSONArray(data);
 
+                    //total number of "items" in the JSON file
                     System.out.println("items "+items.length());
 
+                    //Clear list to not have repetition in case of repeated clicks
                     itemList.clear();
 
-                    int ids = 0;
+                    int lists = 0;
 
+                    //Parse ListID, ID and Name from every item and add it to the itemList
                     for (int i = 0; i < items.length(); i++) {
                         JSONObject item = items.getJSONObject(i);
                         int listId = Integer.parseInt(item.getString("listId"));
                         int id = Integer.parseInt(item.getString("id"));
                         String name = item.getString("name");
+
+                        //discard null or empty values
                         if(name.isEmpty()||name.equals("null"))
                             continue;
 
-                        //switch (listId) {
-                        //    case 1:  itemList1.add(new Item(listId,id,name));
-                        //        break;
-                        //    case 2:  itemList2.add(new Item(listId,id,name));
-                        //        break;
-                        //    case 3:  itemList3.add(new Item(listId,id,name));
-                        //        break;
-                        //    case 4:  itemList4.add(new Item(listId,id,name));
-                        //        break;
-                        //}
-
                         itemList.add(new Item(listId,id,name));
 
-                        if(listId>ids){
-                            ids = listId;
+                        if(listId>lists){
+                            lists = listId;
                         }
                     }
 
-                    System.out.println("max id: "+ ids);
+                    System.out.println("Max List ids: "+ lists);
 
+                    //Sort the itemList using Collections
                     Collections.sort(itemList);
 
                 }
@@ -170,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            //Close the progress dialog and notify the adapter of the data change
             mainHandler.post(() -> {
                 if(progressDialog.isShowing()){
                     progressDialog.dismiss();

@@ -1,26 +1,19 @@
 package com.shubham.fetchcodingtestapp;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 public class Item implements Comparable<Item> {
 
+    //Item class to store Items with their values
     int listId;
     int id;
     String name;
-    String itemDisc;
-
-
 
     Item(int listID, int id, String name){
         this.listId = listID;
         this.id = id;
         this.name = name;
-        this.itemDisc = "ListID: "+listId+" Id: "+id+" Name: "+name;
     }
 
-
+    //CompareTo method for sorting of the Items based on their ID/Name
     @Override
     public int compareTo(Item i) {
         {

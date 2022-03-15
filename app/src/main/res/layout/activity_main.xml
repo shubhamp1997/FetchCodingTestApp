@@ -29,6 +29,7 @@
         app:layout_constraintBottom_toTopOf="@+id/itemsList">
 
         <Button
+            android:layout_margin="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -38,6 +39,7 @@
 
 
         <Button
+            android:layout_margin="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -46,6 +48,7 @@
             android:onClick="list2Tapped"/>
 
         <Button
+            android:layout_margin="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -54,6 +57,7 @@
             android:onClick="list3Tapped"/>
 
         <Button
+            android:layout_margin="5dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
