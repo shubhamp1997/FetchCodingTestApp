@@ -1,6 +1,7 @@
 package com.shubham.fetchcodingtestapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -29,8 +30,6 @@ import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
 
-    int selectedList = 1;
-
     ItemAdapter itemAdapter;
     Handler mainHandler = new Handler();
     ProgressDialog progressDialog;
@@ -41,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
